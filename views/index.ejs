@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= title %></title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+  </head>
+  <body>
+    <h1><%= title %></h1>
+    <p>Welcome to <%= title %></p>
+    <button id='listen'> Start Listening</button>
+  
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src='https://code.responsivevoice.org/responsivevoice.js'></script>
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+  	var isListen = false;
+    var socket = io.connect('http://localhost:3000');
+    $("#listen").click(function(){
+    	if(!isListen){
+   		socket.emit('client', { type: 'action', method: 'start_listening' }); 
+   		 $("#listen").text("Stop Listening");
+   		 isListen = true;	
+    	}else{
+    	 socket.emit('client', { type: 'action', method: 'stop_listening' });
+    	 $("#listen").text("Start Listening");
+    	 isListen = false; 	
+    	}
+    })
+    socket.on('news', function (data) {
+      console.log(data);
+      if(data.type == 'response'){
+      	responsiveVoice.speak(data.statement);
+      }
+    });
+  </script>
+  </body>
+</html>
